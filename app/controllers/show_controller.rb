@@ -3,13 +3,18 @@ class ShowController < ApplicationController
   include ShowHelper
 
   def id
+    show_response = HTTParty.get(trakt_search_url_id(params[:tvdb_id]), headers: headers)
 
+    getData(show_response)
   end
 
   def name
+    show_response = HTTParty.get(trakt_search_url_name(params[:show_name]), headers: headers)
 
-    show_response = HTTParty.get(trakt_search_url(params[:show_name]), headers: headers)
+    getData(show_response)
+  end
 
+  def getData(show_response)
     show_json_response = JSON.parse(show_response.body)
 
     show_results = Array.new
