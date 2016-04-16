@@ -1,33 +1,27 @@
 class TrendingController < ApplicationController
+  include TrendingHelper
 
   def shows
-
     trending_show_url = 'https://api-v2launch.trakt.tv/shows/trending'
-    trakt_api_key = '1c4a464a5219fdf0162eb19f8ba9a400'
-    trakt_base_url = 'http://webservice.fanart.tv/v3/tv/'
 
-    response = HTTParty.get( trending_show_url, headers: {
-        'Content-Type' => 'application/json',
-        'trakt-api-version' => '2',
-        'trakt-api-key' => 'aec1b396a60919ff527a8137010c2da0e6ba48fece269d86158c860bfdc5f98b'
-    })
+    response = HTTParty.get( trending_show_url, headers: headers)
 
     trending_object_response = Array.new
 
     response_json = JSON.parse(response.body)
 
-    response_json.each do |json_onj|
+    response_json.each do |trakt_trend_show_json|
 
-      trakt_show_id = json_onj['show']['ids']['tvdb'].to_s
+      tvdb_show_id = trakt_trend_show_json['show']['ids']['tvdb'].to_s
 
-      trakt_show_url = trakt_base_url + trakt_show_id + '?api_key=' + trakt_api_key
+      fanart_show_url = fanart_base_url + tvdb_show_id + '?api_key=' + fanart_api_key
 
-      trakt_show_response = HTTParty.get(trakt_show_url)
-      trakt_json_response =  JSON.parse(trakt_show_response.body)
+      fanart_show_response = HTTParty.get(fanart_show_url)
+      fanart_json_response =  JSON.parse(fanart_show_response.body)
 
       image_url = ''
 
-      trakt_json_response['tvbanner'].each do |image|
+      fanart_json_response['tvbanner'].each do |image|
         if image['lang'] == 'en'
           image_url = image['url']
           break
@@ -35,10 +29,10 @@ class TrendingController < ApplicationController
       end
 
       trending_object_response << {
-          show_title: json_onj['show']['title'],
-          watchers_count: json_onj['watchers'],
+          show_title: trakt_trend_show_json['show']['title'],
+          watchers_count: trakt_trend_show_json['watchers'],
           image_url: image_url,
-
+          tvdb_id: trakt_trend_show_json['show']['ids']['tvdb']
       }
     end
 
