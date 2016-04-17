@@ -40,7 +40,7 @@ class ShowController < ApplicationController
 
       end
 
-      if !banner_image_url.empty?
+      unless banner_image_url.empty? or show_obj['year'].nil?
         show_results << {
             title: show_obj['title'],
             overview: show_obj['overview'],
