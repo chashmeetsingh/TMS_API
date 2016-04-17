@@ -23,12 +23,12 @@ class TrendingController < ApplicationController
         trending_object_response << {
             show_title: trakt_trend_show_json['show']['title'],
             watchers_count: trakt_trend_show_json['watchers'],
-            poster_image_url:  trakt_json_response[0]['show']['images']['fanart']['thumb'],
+            thumb_image_url:  trakt_json_response[0]['show']['images']['fanart']['thumb'],
             tvdb_id: trakt_trend_show_json['show']['ids']['tvdb'],
             overview: trakt_json_response[0]['show']['overview'],
             year: trakt_json_response[0]['show']['year'],
             status: trakt_json_response[0]['show']['status'],
-            banner_image_url: trakt_json_response[0]['show']['images']['poster']['medium']
+            poster_image_url: trakt_json_response[0]['show']['images']['poster']['medium']
         }
       end
     end
