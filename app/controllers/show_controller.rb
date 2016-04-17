@@ -16,6 +16,8 @@ class ShowController < ApplicationController
   end
 
   def getData(show_response)
+    require 'open-uri'
+    require 'nokogiri'
     show_json_response = show_response.body.length >= 2 ? JSON.parse(show_response.body) : nil
 
     show_results = Array.new
@@ -27,14 +29,15 @@ class ShowController < ApplicationController
       banner_image_url = ''
 
       unless poster_m_image_url.nil? or tvdb_id.nil?
-        tvdb_response = HTTParty.get(tvdb_banner_url(tvdb_id))
 
-        Hash.from_xml(tvdb_response.body)['Banners']['Banner'].each do |result|
-          if result['BannerType'] == 'series' && result['BannerType2'] == 'graphical' && result['Language'] == 'en'
-            banner_image_url = 'http://thetvdb.com/banners/' + result['BannerPath']
+        response = Nokogiri::XML(open(tvdb_banner_url(tvdb_id)))
+        response.css('Banner').each do |obj|
+          if obj.xpath('Language').inner_text == 'en' && obj.xpath('BannerType2').inner_text == 'graphical'
+            banner_image_url = 'http://thetvdb.com/banners/' + obj.xpath('BannerPath').inner_text
             break
           end
         end
+
       end
 
       if !banner_image_url.empty?
