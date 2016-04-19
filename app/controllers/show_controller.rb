@@ -5,10 +5,9 @@ class ShowController < ApplicationController
   def id
     require 'open-uri'
     require 'crack/xml'
-    puts tvdb_get_show_url(params[:tvdb_id])
+
     xml_data = HTTParty.get(tvdb_get_show_url(params[:tvdb_id]))
 
-    show_object = Array.new
     xml_to_json = Crack::XML.parse(xml_data.body)
 
     base_obj = xml_to_json['Data']['Series']
@@ -18,30 +17,58 @@ class ShowController < ApplicationController
 
     single_season = Array.new
     xml_to_json['Data']['Episode'].each do |episode|
+      if episode['filename'].nil?
+        image_url = nil
+      else
+        image_url = 'http://www.thetvdb.com/banners/' + episode['filename']
+      end
+      if episode['EpisodeName'].nil?
+        episode_name = 'TBA'
+      else
+        episode_name = episode['EpisodeName']
+      end
+
+      #puts episode
+
+      #puts episode['FirstAired']
+
+      if !episode['FirstAired'].nil?
+        show_air_time = episode['FirstAired'] + ' ' + base_obj['Airs_Time']
+        #puts show_air_time
+        begin
+          new_time = Time.strptime(show_air_time, '%Y-%m-%d %I:%M %p')
+        rescue
+          new_time = Time.strptime(show_air_time, '%Y-%m-%d %I:%M%p')
+        end
+        new_time = new_time.strftime('%d-%m-%Y %I:%M %p')
+      else
+        new_time = nil
+      end
+
+      #puts new_time
+
       if episode['Combined_season'].to_i == default_season_no
         single_season << {
-            episode_name: episode['EpisodeName'],
-            air_date: episode['FirstAired'],
+            episode_name: episode_name,
+            air_date_time: new_time,
             overview: episode['Overview'],
-            image: 'http://www.thetvdb.com/banners/' ,
+            image: image_url,
             rating: episode['Rating'],
             writer: episode['Writer']
         }
       else
         default_season_no += 1
-        season = 'Season ' + default_season_no.to_s
         all_seasons <<  single_season
         single_season = []
         single_season << {
-            episode_name: episode['EpisodeName'],
-            air_date: episode['FirstAired'],
+            episode_name: episode_name,
+            air_date_time: new_time,
             overview: episode['Overview'],
-            image: 'http://www.thetvdb.com/banners/',
+            image: image_url,
             rating: episode['Rating'],
             writer: episode['Writer']
         }
       end
-
     end
     all_seasons << single_season
 
