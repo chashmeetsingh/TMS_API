@@ -83,7 +83,7 @@ class ShowController < ApplicationController
         overview: base_obj['Overview'],
         rating: base_obj['Rating'],
         runtime: base_obj['Runtime'],
-        status: base_obj['Status'],
+        status: base_obj['Status'].titleize,
         banner: 'http://www.thetvdb.com/banners/' + base_obj['banner'],
         fanart: 'http://www.thetvdb.com/banners/' + base_obj['fanart'],
         poster: 'http://www.thetvdb.com/banners/' + base_obj['poster'],
@@ -130,7 +130,7 @@ class ShowController < ApplicationController
             title: show_obj['title'],
             overview: show_obj['overview'],
             year: show_obj['year'],
-            status: show_obj['status'],
+            status: show_obj['status'].titleize,
             tvdb_id: show_obj['ids']['tvdb'],
             banner: banner_image_url,
             poster: poster_m_image_url

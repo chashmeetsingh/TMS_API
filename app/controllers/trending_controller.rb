@@ -3,7 +3,7 @@ class TrendingController < ApplicationController
   include ShowHelper
 
   def shows
-    trending_show_url = 'https://api-v2launch.trakt.tv/shows/trending'
+    trending_show_url = 'https://api-v2launch.trakt.tv/shows/trending?limit=25'
 
     response = HTTParty.get(trending_show_url, headers: headers)
 
@@ -27,7 +27,7 @@ class TrendingController < ApplicationController
             tvdb_id: trakt_trend_show_json['show']['ids']['tvdb'],
             overview: trakt_json_response[0]['show']['overview'],
             year: trakt_json_response[0]['show']['year'],
-            status: trakt_json_response[0]['show']['status'],
+            status: trakt_json_response[0]['show']['status'].titleize,
             poster_image_url: trakt_json_response[0]['show']['images']['poster']['medium']
         }
       end
