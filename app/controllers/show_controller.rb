@@ -3,10 +3,68 @@ class ShowController < ApplicationController
   include ShowHelper
 
   def id
-    show_response = HTTParty.get(trakt_search_url_id(params[:tvdb_id
-                                                     ]), headers: headers)
+    require 'open-uri'
+    require 'crack/xml'
+    puts tvdb_get_show_url(params[:tvdb_id])
+    xml_data = HTTParty.get(tvdb_get_show_url(params[:tvdb_id]))
 
-    getData(show_response)
+    show_object = Array.new
+    xml_to_json = Crack::XML.parse(xml_data.body)
+
+    base_obj = xml_to_json['Data']['Series']
+
+    all_seasons = Array.new
+    default_season_no = 0
+
+    single_season = Array.new
+    xml_to_json['Data']['Episode'].each do |episode|
+      if episode['Combined_season'].to_i == default_season_no
+        single_season << {
+            episode_name: episode['EpisodeName'],
+            air_date: episode['FirstAired'],
+            overview: episode['Overview'],
+            image: 'http://www.thetvdb.com/banners/' ,
+            rating: episode['Rating'],
+            writer: episode['Writer']
+        }
+      else
+        default_season_no += 1
+        season = 'Season ' + default_season_no.to_s
+        all_seasons <<  single_season
+        single_season = []
+        single_season << {
+            episode_name: episode['EpisodeName'],
+            air_date: episode['FirstAired'],
+            overview: episode['Overview'],
+            image: 'http://www.thetvdb.com/banners/',
+            rating: episode['Rating'],
+            writer: episode['Writer']
+        }
+      end
+
+    end
+    all_seasons << single_season
+
+    series_object = {
+        series_name: base_obj['SeriesName'],
+        actors: base_obj['Actors'],
+        genre: base_obj['Genre'],
+        first_aired: base_obj['FirstAired'],
+        air_time: base_obj['Airs_Time'],
+        airs_day_of_the_week: base_obj['Airs_DayOfWeek'],
+        network: base_obj['Network'],
+        overview: base_obj['Overview'],
+        rating: base_obj['Rating'],
+        runtime: base_obj['Runtime'],
+        status: base_obj['Status'],
+        banner: 'http://www.thetvdb.com/banners/' + base_obj['banner'],
+        fanart: 'http://www.thetvdb.com/banners/' + base_obj['fanart'],
+        poster: 'http://www.thetvdb.com/banners/' + base_obj['poster'],
+        seasons: all_seasons
+    }
+
+    #render json: Crack::XML.parse(xml_data.body)
+    render json: series_object
   end
 
   def name

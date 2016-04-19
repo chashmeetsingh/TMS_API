@@ -11,4 +11,8 @@ module ShowHelper
   def tvdb_banner_url(tvdb_id)
     'http://thetvdb.com/api/9DD79C4EF5C3AE90/series/' + tvdb_id + '/banners.xml'
   end
+
+  def tvdb_get_show_url(tvdb_id)
+    'http://thetvdb.com/api/9DD79C4EF5C3AE90/series/' + tvdb_id + '/all'
+  end
 end
