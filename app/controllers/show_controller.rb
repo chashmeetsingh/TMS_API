@@ -56,7 +56,8 @@ class ShowController < ApplicationController
             rating: episode['Rating'],
             rating_count: episode['RatingCount'],
             writer: episode['Writer'],
-            watched: false
+            watched: false,
+            episode_no: episode['EpisodeName']
         }
       else
         default_season_no += 1
@@ -70,7 +71,8 @@ class ShowController < ApplicationController
             rating: episode['Rating'],
             rating_count: episode['RatingCount'],
             writer: episode['Writer'],
-            watched: false
+            watched: false,
+            episode_no: episode['EpisodeName']
         }
       end
     end
