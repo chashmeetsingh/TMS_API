@@ -81,7 +81,6 @@ class ShowController < ApplicationController
         genre: base_obj['Genre'],
         first_aired: base_obj['FirstAired'],
         air_time: base_obj['Airs_Time'],
-        airs_day_of_the_week: base_obj['Airs_DayOfWeek'],
         network: base_obj['Network'],
         overview: base_obj['Overview'],
         rating: base_obj['Rating'],
