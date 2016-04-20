@@ -54,6 +54,7 @@ class ShowController < ApplicationController
             overview: episode['Overview'],
             image: image_url,
             rating: episode['Rating'],
+            rating_count: episode['RatingCount'],
             writer: episode['Writer'],
             watched: false
         }
@@ -67,6 +68,7 @@ class ShowController < ApplicationController
             overview: episode['Overview'],
             image: image_url,
             rating: episode['Rating'],
+            rating_count: episode['RatingCount'],
             writer: episode['Writer'],
             watched: false
         }
@@ -84,11 +86,12 @@ class ShowController < ApplicationController
         network: base_obj['Network'],
         overview: base_obj['Overview'],
         rating: base_obj['Rating'],
+        rating_count: base_obj['RatingCount'],
         runtime: base_obj['Runtime'],
         status: base_obj['Status'].titleize,
         banner: 'http://www.thetvdb.com/banners/' + base_obj['banner'],
         fanart: 'http://www.thetvdb.com/banners/' + base_obj['fanart'],
-        poster: 'http://www.thetvdb.com/banners/' + base_obj['poster'],
+        image: 'http://www.thetvdb.com/banners/' + base_obj['poster'],
         seasons: all_seasons
     }
 
