@@ -49,30 +49,33 @@ class ShowController < ApplicationController
 
       if episode['Combined_season'].to_i == default_season_no
         single_season << {
-            episode_name: episode_name,
+            title: episode_name,
             air_date_time: new_time,
             overview: episode['Overview'],
             image: image_url,
             rating: episode['Rating'],
-            writer: episode['Writer']
+            writer: episode['Writer'],
+            watched: false
         }
       else
         default_season_no += 1
         all_seasons <<  single_season
         single_season = []
         single_season << {
-            episode_name: episode_name,
+            title: episode_name,
             air_date_time: new_time,
             overview: episode['Overview'],
             image: image_url,
             rating: episode['Rating'],
-            writer: episode['Writer']
+            writer: episode['Writer'],
+            watched: false
         }
       end
     end
     all_seasons << single_season
 
     series_object = {
+        id: base_obj['id'],
         series_name: base_obj['SeriesName'],
         actors: base_obj['Actors'],
         genre: base_obj['Genre'],
