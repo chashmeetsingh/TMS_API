@@ -76,7 +76,7 @@ class ShowController < ApplicationController
 
     series_object = {
         id: base_obj['id'],
-        series_name: base_obj['SeriesName'],
+        title: base_obj['SeriesName'],
         actors: base_obj['Actors'],
         genre: base_obj['Genre'],
         first_aired: base_obj['FirstAired'],
