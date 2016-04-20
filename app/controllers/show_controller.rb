@@ -81,7 +81,7 @@ class ShowController < ApplicationController
     end
     all_seasons <<  {
         episodes: single_season,
-        'Season No': default_season_no
+        'Season': default_season_no
     }
 
     series_object = {
