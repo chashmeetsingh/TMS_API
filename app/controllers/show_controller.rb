@@ -60,11 +60,11 @@ class ShowController < ApplicationController
             episode_no: episode['EpisodeNumber']
         }
       else
-        default_season_no += 1
         all_seasons <<  {
             episodes: single_season,
             'Season No': default_season_no
         }
+        default_season_no += 1
         single_season = []
         single_season << {
             title: episode_name,
