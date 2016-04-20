@@ -57,7 +57,7 @@ class ShowController < ApplicationController
             rating_count: episode['RatingCount'],
             writer: episode['Writer'],
             watched: false,
-            episode_no: episode['EpisodeNumber']
+            episode: episode['EpisodeNumber']
         }
       else
         all_seasons <<  {
@@ -75,7 +75,7 @@ class ShowController < ApplicationController
             rating_count: episode['RatingCount'],
             writer: episode['Writer'],
             watched: false,
-            episode_no: episode['EpisodeNumber']
+            episode: episode['EpisodeNumber']
         }
       end
     end
