@@ -60,10 +60,12 @@ class ShowController < ApplicationController
             episode: episode['EpisodeNumber']
         }
       else
-        all_seasons <<  {
-            episodes: single_season,
-            'season': default_season_no
-        }
+        if single_season.any?
+          all_seasons << {
+              episodes: single_season,
+              'season': default_season_no
+          }
+        end
         default_season_no += 1
         single_season = []
         single_season << {
@@ -79,7 +81,7 @@ class ShowController < ApplicationController
         }
       end
     end
-    all_seasons <<  {
+    all_seasons << {
         episodes: single_season,
         'season': default_season_no
     }
