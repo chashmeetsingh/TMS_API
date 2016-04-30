@@ -123,6 +123,7 @@ class ShowController < ApplicationController
     show_results = Array.new
 
     show_json_response.each do |show|
+      score = show['score']
       show_obj = show['show']
       poster_m_image_url = show_obj['images']['poster']['medium']
       tvdb_id = show_obj['ids']['tvdb'].to_s
@@ -148,7 +149,8 @@ class ShowController < ApplicationController
             status: show_obj['status'].titleize,
             tvdb_id: show_obj['ids']['tvdb'],
             banner: banner_image_url,
-            poster: poster_m_image_url
+            poster: poster_m_image_url,
+            score: score
         }
       end
     end
