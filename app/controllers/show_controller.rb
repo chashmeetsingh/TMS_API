@@ -53,17 +53,17 @@ class ShowController < ApplicationController
             air_date_time: new_time,
             overview: episode['Overview'],
             image: image_url,
-            rating: episode['Rating'],
-            rating_count: episode['RatingCount'],
+            rating: episode['Rating'].to_f,
+            rating_count: episode['RatingCount'].to_i,
             writer: episode['Writer'],
             watched: false,
-            episode: episode['EpisodeNumber']
+            episode: episode['EpisodeNumber'].to_i
         }
       else
         if single_season.any?
           all_seasons << {
               episodes: single_season,
-              'season': default_season_no
+              'season' => default_season_no
           }
         end
         default_season_no += 1
@@ -73,17 +73,17 @@ class ShowController < ApplicationController
             air_date_time: new_time,
             overview: episode['Overview'],
             image: image_url,
-            rating: episode['Rating'],
-            rating_count: episode['RatingCount'],
+            rating: episode['Rating'].to_f,
+            rating_count: episode['RatingCount'].to_i,
             writer: episode['Writer'],
             watched: false,
-            episode: episode['EpisodeNumber']
+            episode: episode['EpisodeNumber'].to_i
         }
       end
     end
     all_seasons << {
         episodes: single_season,
-        'season': default_season_no
+        'season' => default_season_no
     }
 
     series_object = {
@@ -95,9 +95,9 @@ class ShowController < ApplicationController
         air_time: base_obj['Airs_Time'],
         network: base_obj['Network'],
         overview: base_obj['Overview'],
-        rating: base_obj['Rating'],
-        rating_count: base_obj['RatingCount'],
-        runtime: base_obj['Runtime'],
+        rating: base_obj['Rating'].to_f,
+        rating_count: base_obj['RatingCount'].to_i,
+        runtime: base_obj['Runtime'].to_i,
         status: base_obj['Status'].titleize,
         banner: 'http://www.thetvdb.com/banners/' + base_obj['banner'],
         fanart: 'http://www.thetvdb.com/banners/' + base_obj['fanart'],
