@@ -33,7 +33,8 @@ class ShowController < ApplicationController
       #puts episode['FirstAired']
 
       unless episode['FirstAired'].nil?
-        show_air_time = episode['FirstAired'] + ' ' + base_obj['Airs_Time']
+        show_air_time = episode['FirstAired']
+        show_air_time += ' ' + base_obj['Airs_Time'] unless base_obj['Airs_time'].nil?
         begin
           new_time = DateTime.strptime(show_air_time, '%Y-%m-%d %I:%M %p')
         rescue
