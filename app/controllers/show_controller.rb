@@ -32,13 +32,16 @@ class ShowController < ApplicationController
 
       #puts episode['FirstAired']
 
-      if !episode['FirstAired'].nil?
+      unless episode['FirstAired'].nil?
         show_air_time = episode['FirstAired'] + ' ' + base_obj['Airs_Time']
-        #puts show_air_time
         begin
-          new_time = Time.strptime(show_air_time, '%Y-%m-%d %I:%M %p')
+          new_time = DateTime.strptime(show_air_time, '%Y-%m-%d %I:%M %p')
         rescue
-          new_time = Time.strptime(show_air_time, '%Y-%m-%d %I:%M%p')
+          begin
+            new_time = DateTime.strptime(show_air_time, '%Y-%m-%d %I:%M%p')
+          rescue
+            new_time = DateTime.strptime(show_air_time, '%Y-%m-%d')
+          end
         end
         new_time = new_time.strftime('%d-%m-%Y %I:%M %p')
       else
