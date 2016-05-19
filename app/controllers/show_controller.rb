@@ -52,7 +52,7 @@ class ShowController < ApplicationController
       if episode['Combined_season'].to_i == default_season_no
         single_season << {
             title: episode_name,
-            date: Date.parse(episode['FirstAired']).strftime("%d-%m-%Y"),
+            date: if episode['FirstAired'].nil? then nil else Date.parse(episode['FirstAired']).strftime("%d-%m-%Y") end,
             air_date_time: new_time,
             overview: episode['Overview'],
             image: image_url,
@@ -73,7 +73,7 @@ class ShowController < ApplicationController
         single_season = []
         single_season << {
             title: episode_name,
-            date: Date.parse(episode['FirstAired']).strftime("%d-%m-%Y"),
+            date: if episode['FirstAired'].nil? then nil else Date.parse(episode['FirstAired']).strftime("%d-%m-%Y") end,
             air_date_time: new_time,
             overview: episode['Overview'],
             image: image_url,
