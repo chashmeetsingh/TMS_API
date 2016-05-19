@@ -52,7 +52,11 @@ class ShowController < ApplicationController
       if episode['Combined_season'].to_i == default_season_no
         single_season << {
             title: episode_name,
-            date: if episode['FirstAired'].nil? then nil else Date.parse(episode['FirstAired']).strftime("%d-%m-%Y") end,
+            date: if episode['FirstAired'].nil? then
+                    nil
+                  else
+                    Date.parse(episode['FirstAired']).strftime("%d-%m-%Y")
+                  end,
             air_date_time: new_time,
             overview: episode['Overview'],
             image: image_url,
@@ -73,7 +77,11 @@ class ShowController < ApplicationController
         single_season = []
         single_season << {
             title: episode_name,
-            date: if episode['FirstAired'].nil? then nil else Date.parse(episode['FirstAired']).strftime("%d-%m-%Y") end,
+            date: if episode['FirstAired'].nil? then
+                    nil
+                  else
+                    Date.parse(episode['FirstAired']).strftime("%d-%m-%Y")
+                  end,
             air_date_time: new_time,
             overview: episode['Overview'],
             image: image_url,
@@ -126,37 +134,43 @@ class ShowController < ApplicationController
 
     show_results = Array.new
 
-    show_json_response.each do |show|
-      score = show['score']
-      show_obj = show['show']
-      poster_m_image_url = show_obj['images']['poster']['medium']
-      tvdb_id = show_obj['ids']['tvdb'].to_s
-      banner_image_url = ''
+    begin
+      show_json_response.each do |show|
+        score = show['score']
+        show_obj = show['show']
+        poster_m_image_url = show_obj['images']['poster']['medium']
+        tvdb_id = show_obj['ids']['tvdb'].to_s
+        banner_image_url = ''
 
-      unless poster_m_image_url.nil? or tvdb_id.nil?
+        unless poster_m_image_url.nil? or tvdb_id.nil?
 
-        response = Nokogiri::XML(open(tvdb_banner_url(tvdb_id)))
-        response.css('Banner').each do |obj|
-          if obj.xpath('Language').inner_text == 'en' && obj.xpath('BannerType2').inner_text == 'graphical'
-            banner_image_url = 'http://thetvdb.com/banners/' + obj.xpath('BannerPath').inner_text
-            break
+          response = Nokogiri::XML(open(tvdb_banner_url(tvdb_id)))
+          response.css('Banner').each do |obj|
+            if obj.xpath('Language').inner_text == 'en' && obj.xpath('BannerType2').inner_text == 'graphical'
+              banner_image_url = 'http://thetvdb.com/banners/' + obj.xpath('BannerPath').inner_text
+              break
+            end
           end
+
         end
 
+        unless banner_image_url.empty? or show_obj['year'].nil?
+          show_results << {
+              title: show_obj['title'],
+              overview: show_obj['overview'],
+              year: show_obj['year'],
+              status: show_obj['status'].titleize,
+              tvdb_id: show_obj['ids']['tvdb'],
+              banner: banner_image_url,
+              poster: poster_m_image_url,
+              score: score
+          }
+        end
       end
-
-      unless banner_image_url.empty? or show_obj['year'].nil?
-        show_results << {
-            title: show_obj['title'],
-            overview: show_obj['overview'],
-            year: show_obj['year'],
-            status: show_obj['status'].titleize,
-            tvdb_id: show_obj['ids']['tvdb'],
-            banner: banner_image_url,
-            poster: poster_m_image_url,
-            score: score
-        }
-      end
+    rescue
+      show_results << {
+          message: 'Error fetching data'
+      }
     end
 
     render json: {
