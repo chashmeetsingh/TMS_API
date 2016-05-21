@@ -57,7 +57,7 @@ class ShowController < ApplicationController
                   else
                     Date.parse(episode['FirstAired']).strftime("%d-%m-%Y")
                   end,
-            air_date_time: new_time,
+            air_date_time: episode['FirstAired'] + " " + base_obj['Airs_Time'],
             overview: episode['Overview'],
             image: image_url,
             rating: episode['Rating'].to_f,
@@ -82,7 +82,7 @@ class ShowController < ApplicationController
                   else
                     Date.parse(episode['FirstAired']).strftime("%d-%m-%Y")
                   end,
-            air_date_time: new_time,
+            air_date_time: episode['FirstAired'] + " " + base_obj['Airs_Time'],
             overview: episode['Overview'],
             image: image_url,
             rating: episode['Rating'].to_f,
