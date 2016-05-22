@@ -57,7 +57,11 @@ class ShowController < ApplicationController
                   else
                     Date.parse(episode['FirstAired']).strftime("%d-%m-%Y")
                   end,
-            air_date_time: episode['FirstAired'] + " " + base_obj['Airs_Time'],
+            air_date_time: if episode['FirstAired'].nil? or base_obj['Airs_Time'].nil? then
+                             nil
+                           else
+                             episode['FirstAired'] + " " + base_obj['Airs_Time']
+                           end,
             overview: episode['Overview'],
             image: image_url,
             rating: episode['Rating'].to_f,
