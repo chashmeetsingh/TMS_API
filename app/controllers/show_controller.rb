@@ -51,6 +51,7 @@ class ShowController < ApplicationController
 
       if episode['Combined_season'].to_i == default_season_no
         single_season << {
+            id: episode['id'],
             title: episode_name,
             date: if episode['FirstAired'].nil? then
                     nil
@@ -80,6 +81,7 @@ class ShowController < ApplicationController
         default_season_no += 1
         single_season = []
         single_season << {
+            id: episode['id'],
             title: episode_name,
             date: if episode['FirstAired'].nil? then
                     nil
