@@ -124,7 +124,11 @@ class DataParseController < ApplicationController
 
       # Use conditionals for assignment
       image_url = nil ? image.nil? : image_base_url + image
-      episode_title = 'TBA' ? title.nil? : title
+      episode_title = if title.nil?
+                        'TBA'
+                      else
+                        title
+                      end
       air_date_time = if first_aired.nil? or air_time.nil?
                         nil
                       else
@@ -132,7 +136,7 @@ class DataParseController < ApplicationController
                       end
 
       # Check if Special Episode Season
-      if combined_season = season_no
+      if combined_season == season_no
         season << {
           id: episode_id,
           title: episode_title,
