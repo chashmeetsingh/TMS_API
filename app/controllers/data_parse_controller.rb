@@ -110,7 +110,7 @@ class DataParseController < ApplicationController
     episodes_data.each do |episode|
 
       # Initialise Variables
-      image = episode['filename']
+      image = episode['filename'].to_s
       title = episode['EpisodeName']
       combined_season = episode['Combined_season'].to_i
       episode_id = episode['id']
@@ -123,7 +123,7 @@ class DataParseController < ApplicationController
       episode_no = episode['EpisodeNumber'].to_i
 
       # Use conditionals for assignment
-      image_url = nil ? image.nil : image_base_url + image
+      image_url = nil ? image.nil? : image_base_url + image
       episode_title = 'TBA' ? title.nil? : title
       air_date_time = if first_aired.nil? or air_time.nil?
                         nil
