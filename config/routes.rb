@@ -1,9 +1,9 @@
 Rails.application.routes.draw do
-  root to: 'trending#shows'
+  root to: 'data_parse#trending'
 
-  get 'trending/shows'
+  get '/trending' => 'data_parse#trending'
 
-  get '/show/id/:tvdb_id' => 'show#id'
+  get '/show/id/:tvdb_id' => 'data_parse#id'
 
-  get '/show/name/:show_name' => 'show#name'
+  get '/show/name/:show_name' => 'data_parse#name'
 end
