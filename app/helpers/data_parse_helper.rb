@@ -1,7 +1,7 @@
 module DataParseHelper
 
   def trending_show_url
-    'https://api-v2launch.trakt.tv/shows/trending?limit=25'
+    'https://api-v2launch.trakt.tv/shows/trending?limit=20'
   end
 
   def headers
