@@ -90,21 +90,21 @@ class DataParseController < ApplicationController
     seasons = Array.new
     season = Array.new
     season_no = 0
-    show_id = json_parsed_response['id']
-    show_title = json_parsed_response['SeriesName']
-    show_actors = json_parsed_response['Actors']
-    show_genre = json_parsed_response['Genre']
-    show_first_aired = json_parsed_response['FirstAired']
-    show_air_time = json_parsed_response['Airs_Time']
-    show_network = json_parsed_response['Network']
-    show_overview = json_parsed_response['Overview']
-    show_rating = json_parsed_response['Rating'].to_f
-    show_rating_count = json_parsed_response['RatingCount'].to_i
-    show_runtime = json_parsed_response['Runtime'].to_i
-    show_status = json_parsed_response['Status'].titleize
-    show_banner_url = image_base_url + json_parsed_response['banner']
-    show_fanart_url = image_base_url + json_parsed_response['fanart']
-    show_poster_url = image_base_url + json_parsed_response['poster']
+    show_id = show_data['id']
+    show_title = show_data['SeriesName']
+    show_actors = show_data['Actors']
+    show_genre = show_data['Genre']
+    show_first_aired = show_data['FirstAired']
+    show_air_time = show_data['Airs_Time']
+    show_network = show_data['Network']
+    show_overview = show_data['Overview']
+    show_rating = show_data['Rating'].to_f
+    show_rating_count = show_data['RatingCount'].to_i
+    show_runtime = show_data['Runtime'].to_i
+    show_status = show_data['Status'].titleize
+    show_banner_url = image_base_url + show_data['banner']
+    show_fanart_url = image_base_url + show_data['fanart']
+    show_poster_url = image_base_url + show_data['poster']
 
 
     episodes_data.each do |episode|
