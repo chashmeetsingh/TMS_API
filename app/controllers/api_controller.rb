@@ -17,7 +17,7 @@ class ApiController < ApplicationController
 
     # Parse JSON Data
     # into json_response variable
-    json_response = JSON.parse(response.body)
+    json_response = response.body.length >= 2 ? JSON.parse(response.body) : nil
 
     # Loop through each JSON Object
     json_response.each do |show|

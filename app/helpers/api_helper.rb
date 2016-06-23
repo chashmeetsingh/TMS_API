@@ -8,7 +8,7 @@ module ApiHelper
     {
       'Content-Type' => 'application/json',
       'trakt-api-version' => '2',
-      'username' => ENV['trakt_api_key']
+      'trakt-api-key' => ENV['trakt_api_key']
     }
   end
 
