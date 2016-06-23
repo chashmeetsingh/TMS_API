@@ -1,8 +1,8 @@
-class DataParseController < ApplicationController
+class ApiController < ApplicationController
   require 'open-uri'
   require 'nokogiri'
   require 'crack/xml'
-  include DataParseHelper
+  include ApiHelper
 
   # Retrieve Trending Shows
   def trending
@@ -105,7 +105,6 @@ class DataParseController < ApplicationController
     show_banner_url = image_base_url + show_data['banner']
     show_fanart_url = image_base_url + show_data['fanart']
     show_poster_url = image_base_url + show_data['poster']
-
 
     episodes_data.each do |episode|
 

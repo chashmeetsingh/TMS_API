@@ -1,4 +1,4 @@
-module DataParseHelper
+module ApiHelper
 
   def trending_show_url
     'https://api-v2launch.trakt.tv/shows/trending?limit=20'
@@ -8,7 +8,7 @@ module DataParseHelper
     {
       'Content-Type' => 'application/json',
       'trakt-api-version' => '2',
-      'trakt-api-key' => 'aec1b396a60919ff527a8137010c2da0e6ba48fece269d86158c860bfdc5f98b'
+      'username' => ENV['trakt_api_key']
     }
   end
 
