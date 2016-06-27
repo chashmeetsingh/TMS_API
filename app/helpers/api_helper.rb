@@ -29,6 +29,6 @@ module ApiHelper
   end
 
   def tvdb_banner_url(tvdb_id)
-    'http://thetvdb.com/api/9DD79C4EF5C3AE90/series/' + tvdb_id + '/banners.xml'
+    'http://thetvdb.com/api/9DD79C4EF5C3AE90/series/' + tvdb_id.to_s + '/banners.xml'
   end
 end
