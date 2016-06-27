@@ -225,7 +225,7 @@ class ApiController < ApplicationController
         score = show['score']
         show_obj = show['show']
         poster_image_url = show_obj['images']['poster']['medium']
-        tvdb_id = show_obj['ids']['tvdb'].to_s
+        tvdb_id = show_obj['ids']['tvdb']
         banner_image_url = ''
         show_title = show_obj['title']
         show_overview = show_obj['overview']
