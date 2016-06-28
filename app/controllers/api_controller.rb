@@ -137,7 +137,7 @@ class ApiController < ApplicationController
       # Check if Special Episode Season
       if combined_season == season_no
         season << {
-          id: episode_id,
+          id: episode_id.to_i,
           title: episode_title,
           air_date_time: air_date_time,
           overview: overview,
@@ -157,7 +157,7 @@ class ApiController < ApplicationController
         season_no += 1
         season = []
         season << {
-          id: episode_id,
+          id: episode_id.to_i,
           title: episode_title,
           air_date_time: air_date_time,
           overview: overview,
