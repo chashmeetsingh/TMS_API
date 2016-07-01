@@ -109,7 +109,7 @@ class ApiController < ApplicationController
     show_fanart_url = image_base_url + show_data['fanart']
     show_poster_url = image_base_url + show_data['poster']
 
-    response = HTTParty.get(timezone_url(trakt_id), headers)
+    response = HTTParty.get(timezone_url(trakt_id))
     #timezone = response['airs']['timezone']
     puts response.body
     puts headers
