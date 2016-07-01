@@ -91,7 +91,7 @@ class ApiController < ApplicationController
 
     # Get Time Zone and Rating
     response = HTTParty.get(timezone_url(trakt_id), headers)
-    timezone = response['airs']['timezone']
+    timezone = response["airs"]["timezone"]
 
     # Initialise Variables
     seasons = Array.new
