@@ -89,9 +89,6 @@ class ApiController < ApplicationController
     show_data = json_parsed_response['Data']['Series']
     episodes_data = json_parsed_response['Data']['Episode']
 
-    response = HTTParty.get(timezone_url(trakt_id), headers)
-    timezone = response['airs']['timezone']
-
     # Initialise Variables
     seasons = Array.new
     season = Array.new
@@ -111,6 +108,9 @@ class ApiController < ApplicationController
     show_banner_url = image_base_url + show_data['banner']
     show_fanart_url = image_base_url + show_data['fanart']
     show_poster_url = image_base_url + show_data['poster']
+
+    response = HTTParty.get(timezone_url(trakt_id), headers)
+    timezone = response['airs']['timezone']
 
     episodes_data.each do |episode|
 
