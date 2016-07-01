@@ -90,7 +90,7 @@ class ApiController < ApplicationController
     episodes_data = json_parsed_response['Data']['Episode']
 
     # Get Time Zone and Rating
-    response = HTTParty.get(timezone_url(trakt_id), headers)
+    response = HTTParty.get(timezone_url(trakt_id), headers: headers)
     timezone = response["airs"]["timezone"]
 
     # Initialise Variables
