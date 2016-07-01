@@ -40,12 +40,12 @@ class ApiController < ApplicationController
 
       # Initialise Variables
       show_title = show['show']['title']
-      watchers = show['watchers']
+      watchers = show['watchers'].to_i
       thumb_url = trakt_json_response[0]['show']['images']['fanart']['thumb']
-      tvdb_id = show['show']['ids']['tvdb']
-      trakt_id = show['show']['ids']['trakt']
+      tvdb_id = show['show']['ids']['tvdb'].to_i
+      trakt_id = show['show']['ids']['trakt'].to_i
       overview = trakt_json_response[0]['show']['overview']
-      year = trakt_json_response[0]['show']['year']
+      year = trakt_json_response[0]['show']['year'].to_i
       status = trakt_json_response[0]['show']['status'].titleize
       poster_url = trakt_json_response[0]['show']['images']['poster']['medium']
 
@@ -97,7 +97,7 @@ class ApiController < ApplicationController
     seasons = Array.new
     season = Array.new
     season_no = 0
-    show_id = show_data['id']
+    show_id = show_data['id'].to_i
     show_title = show_data['SeriesName']
     show_actors = show_data['Actors']
     show_genre = show_data['Genre']
@@ -119,7 +119,7 @@ class ApiController < ApplicationController
       image = episode['filename'].to_s
       title = episode['EpisodeName']
       combined_season = episode['Combined_season'].to_i
-      episode_id = episode['id']
+      episode_id = episode['id'].to_i
       first_aired = episode['FirstAired']
       air_time = show_data['Airs_Time']
       overview = episode['Overview']
@@ -164,7 +164,7 @@ class ApiController < ApplicationController
         season_no += 1
         season = []
         season << {
-          id: episode_id.to_i,
+          id: episode_id,
           title: episode_title,
           air_date_time: air_date_time,
           overview: overview,
@@ -230,7 +230,6 @@ class ApiController < ApplicationController
       json_response.each do |show|
 
         # Initialize variables
-        score = show['score']
         show_obj = show['show']
         poster_image_url = show_obj['images']['poster']['medium']
         tvdb_id = show_obj['ids']['tvdb'].to_i
@@ -238,7 +237,7 @@ class ApiController < ApplicationController
         banner_image_url = ''
         show_title = show_obj['title']
         show_overview = show_obj['overview']
-        show_year = show_obj['year']
+        show_year = show_obj['year'].to_i
         show_status = show_obj['status'].titleize
 
         # Check for null
@@ -263,8 +262,7 @@ class ApiController < ApplicationController
             tvdb_id: tvdb_id,
             trakt_id: trakt_id,
             banner: banner_image_url,
-            poster: poster_image_url,
-            score: score
+            poster: poster_image_url
           }
         end
       end
