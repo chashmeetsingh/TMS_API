@@ -111,7 +111,7 @@ class ApiController < ApplicationController
 
     response = HTTParty.get(timezone_url(trakt_id))
     #timezone = response['airs']['timezone']
-    puts response.body
+    puts response
     puts headers
     puts timezone_url(trakt_id)
     puts trakt_id
