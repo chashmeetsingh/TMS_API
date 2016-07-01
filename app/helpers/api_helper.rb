@@ -33,6 +33,6 @@ module ApiHelper
   end
 
   def timezone_url(trakt_id)
-    'https://api.trakt.tv/shows/' + trakt_id.to_s + '?extended=full'
+    'https://api-v2launch.trakt.tv/shows/' + trakt_id.to_s + '?extended=full'
   end
 end
