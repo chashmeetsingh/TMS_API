@@ -43,6 +43,7 @@ class ApiController < ApplicationController
       watchers = show['watchers']
       thumb_url = trakt_json_response[0]['show']['images']['fanart']['thumb']
       tvdb_id = show['show']['ids']['tvdb']
+      trakt_id = show['show']['ids']['trakt']
       overview = trakt_json_response[0]['show']['overview']
       year = trakt_json_response[0]['show']['year']
       status = trakt_json_response[0]['show']['status'].titleize
@@ -55,6 +56,7 @@ class ApiController < ApplicationController
           watchers_count: watchers,
           thumb_image_url: thumb_url,
           tvdb_id: tvdb_id,
+          trakt_id: trakt_id,
           overview: overview,
           year: year,
           status: status,
@@ -74,6 +76,7 @@ class ApiController < ApplicationController
 
     # TVDB ID
     tvdb_id = params[:tvdb_id]
+    trakt_id = params[:trakt_id]
 
     # Retrieve XML Response
     # From TVDB
@@ -85,6 +88,9 @@ class ApiController < ApplicationController
     # Show and Episode Object
     show_data = json_parsed_response['Data']['Series']
     episodes_data = json_parsed_response['Data']['Episode']
+
+    response = HTTParty.get(timezone_url(trakt_id), headers)
+    timezone = response['airs']['timezone']
 
     # Initialise Variables
     seasons = Array.new
@@ -191,6 +197,7 @@ class ApiController < ApplicationController
       banner: show_banner_url,
       fanart: show_fanart_url,
       poster: show_poster_url,
+      timezone: timezone,
       seasons: seasons
     }
 
@@ -226,6 +233,7 @@ class ApiController < ApplicationController
         show_obj = show['show']
         poster_image_url = show_obj['images']['poster']['medium']
         tvdb_id = show_obj['ids']['tvdb'].to_i
+        trakt_id = show_obj['ids']['trakt'].to_i
         banner_image_url = ''
         show_title = show_obj['title']
         show_overview = show_obj['overview']
@@ -252,6 +260,7 @@ class ApiController < ApplicationController
             year: show_year,
             status: show_status,
             tvdb_id: tvdb_id,
+            trakt_id: trakt_id,
             banner: banner_image_url,
             poster: poster_image_url,
             score: score
