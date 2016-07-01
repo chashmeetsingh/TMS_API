@@ -89,6 +89,10 @@ class ApiController < ApplicationController
     show_data = json_parsed_response['Data']['Series']
     episodes_data = json_parsed_response['Data']['Episode']
 
+    # Get Time Zone and Rating
+    response = HTTParty.get(timezone_url(trakt_id), headers: headers)
+    timezone = response["airs"]["timezone"]
+
     # Initialise Variables
     seasons = Array.new
     season = Array.new
@@ -101,7 +105,7 @@ class ApiController < ApplicationController
     show_air_time = show_data['Airs_Time']
     show_network = show_data['Network']
     show_overview = show_data['Overview']
-    show_rating = show_data['Rating'].to_f
+    show_rating = response['rating'].to_f
     show_rating_count = show_data['RatingCount'].to_i
     show_runtime = show_data['Runtime'].to_i
     show_status = show_data['Status'].titleize
@@ -109,106 +113,97 @@ class ApiController < ApplicationController
     show_fanart_url = image_base_url + show_data['fanart']
     show_poster_url = image_base_url + show_data['poster']
 
-    response = HTTParty.get(timezone_url(trakt_id))
-    #timezone = response['airs']['timezone']
-    puts response
-    puts headers
-    puts timezone_url(trakt_id)
-    puts trakt_id
+    episodes_data.each do |episode|
 
-    render json: response
+      # Initialise Variables
+      image = episode['filename'].to_s
+      title = episode['EpisodeName']
+      combined_season = episode['Combined_season'].to_i
+      episode_id = episode['id']
+      first_aired = episode['FirstAired']
+      air_time = show_data['Airs_Time']
+      overview = episode['Overview']
+      rating = episode['Rating'].to_f
+      rating_count = episode['RatingCount'].to_i
+      writer = episode['Writer']
+      episode_no = episode['EpisodeNumber'].to_i
 
-    #   episodes_data.each do |episode|
-    #
-    #     # Initialise Variables
-    #     image = episode['filename'].to_s
-    #     title = episode['EpisodeName']
-    #     combined_season = episode['Combined_season'].to_i
-    #     episode_id = episode['id']
-    #     first_aired = episode['FirstAired']
-    #   air_time = show_data['Airs_Time']
-    #   overview = episode['Overview']
-    #   rating = episode['Rating'].to_f
-    #   rating_count = episode['RatingCount'].to_i
-    #   writer = episode['Writer']
-    #   episode_no = episode['EpisodeNumber'].to_i
-    #
-    #   # Use conditionals for assignment
-    #   image_url = nil ? image.nil? : image_base_url + image
-    #   episode_title = if title.nil?
-    #                     'TBA'
-    #                   else
-    #                     title
-    #                   end
-    #   air_date_time = if first_aired.nil? or air_time.nil?
-    #                     nil
-    #                   else
-    #                     first_aired + ' ' + air_time
-    #                   end
-    #
-    #   # Check if Special Episode Season
-    #   if combined_season == season_no
-    #     season << {
-    #       id: episode_id.to_i,
-    #       title: episode_title,
-    #       air_date_time: air_date_time,
-    #       overview: overview,
-    #       image: image_url,
-    #       rating: rating,
-    #       rating_count: rating_count,
-    #       writer: writer,
-    #       episode: episode_no
-    #     }
-    #   else
-    #     if season.any?
-    #       seasons << {
-    #         episodes: season,
-    #         'season' => season_no
-    #       }
-    #     end
-    #     season_no += 1
-    #     season = []
-    #     season << {
-    #       id: episode_id.to_i,
-    #       title: episode_title,
-    #       air_date_time: air_date_time,
-    #       overview: overview,
-    #       image: image_url,
-    #       rating: rating,
-    #       rating_count: rating_count,
-    #       writer: writer,
-    #       episode: episode_no
-    #     }
-    #   end
-    # end
-    #
-    # seasons << {
-    #   episodes: season,
-    #   'season' => season_no
-    # }
-    #
-    # data = {
-    #   id: show_id,
-    #   title: show_title,
-    #   actors: show_actors,
-    #   genre: show_genre,
-    #   first_aired: show_first_aired,
-    #   air_time: show_air_time,
-    #   network: show_network,
-    #   overview: show_overview,
-    #   rating: show_rating,
-    #   rating_count: show_rating_count,
-    #   runtime: show_runtime,
-    #   status: show_status,
-    #   banner: show_banner_url,
-    #   fanart: show_fanart_url,
-    #   poster: show_poster_url,
-    #   timezone: timezone,
-    #   seasons: seasons
-    # }
-    #
-    # # Render Data
-    # render json: data
+      # Use conditionals for assignment
+      image_url = nil ? image.nil? : image_base_url + image
+      episode_title = if title.nil?
+                        'TBA'
+                      else
+                        title
+                      end
+      air_date_time = if first_aired.nil? or air_time.nil?
+                        nil
+                      else
+                        first_aired + ' ' + air_time
+                      end
+
+      # Check if Special Episode Season
+      if combined_season == season_no
+        season << {
+          id: episode_id.to_i,
+          title: episode_title,
+          air_date_time: air_date_time,
+          overview: overview,
+          image: image_url,
+          rating: rating,
+          rating_count: rating_count,
+          writer: writer,
+          episode: episode_no
+        }
+      else
+        if season.any?
+          seasons << {
+            episodes: season,
+            'season' => season_no
+          }
+        end
+        season_no += 1
+        season = []
+        season << {
+          id: episode_id.to_i,
+          title: episode_title,
+          air_date_time: air_date_time,
+          overview: overview,
+          image: image_url,
+          rating: rating,
+          rating_count: rating_count,
+          writer: writer,
+          episode: episode_no
+        }
+      end
+    end
+
+    seasons << {
+      episodes: season,
+      'season' => season_no
+    }
+
+    data = {
+      id: show_id,
+      title: show_title,
+      actors: show_actors,
+      genre: show_genre,
+      first_aired: show_first_aired,
+      air_time: show_air_time,
+      network: show_network,
+      overview: show_overview,
+      rating: show_rating,
+      rating_count: show_rating_count,
+      runtime: show_runtime,
+      status: show_status,
+      banner: show_banner_url,
+      fanart: show_fanart_url,
+      poster: show_poster_url,
+      timezone: timezone,
+      seasons: seasons
+    }
+
+    # Render Data
+    render json: data
   end
 
   # Retrieve Show by Their Name
