@@ -96,7 +96,6 @@ class ApiController < ApplicationController
     # Initialise Variables
     seasons = Array.new
     season = Array.new
-    season_no = 0
     show_id = show_data['id'].to_i
     show_title = show_data['SeriesName']
     show_actors = show_data['Actors']
@@ -112,13 +111,14 @@ class ApiController < ApplicationController
     show_banner_url = image_base_url + show_data['banner']
     show_fanart_url = image_base_url + show_data['fanart']
     show_poster_url = image_base_url + show_data['poster']
+    season_no = 0
 
     episodes_data.each do |episode|
 
       # Initialise Variables
       image = episode['filename'].to_s
       title = episode['EpisodeName']
-      combined_season = episode['Combined_season'].to_i
+      combined_season = episode['SeasonNumber'].to_i
       episode_id = episode['id'].to_i
       first_aired = episode['FirstAired']
       air_time = show_data['Airs_Time']
