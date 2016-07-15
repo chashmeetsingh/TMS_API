@@ -12,12 +12,16 @@ module ApiHelper
     }
   end
 
+  def tvdb_url
+    'http://thetvdb.com/api/' + ENV['tvdb_api_key'] + '/series/'
+  end
+
   def search_url(id)
     'https://api-v2launch.trakt.tv/search?id_type=tvdb&id=' + id.to_s
   end
 
   def show_url(id)
-    'http://thetvdb.com/api/9DD79C4EF5C3AE90/series/' + id + '/all'
+    tvdb_url + id + '/all'
   end
 
   def image_base_url
@@ -29,7 +33,7 @@ module ApiHelper
   end
 
   def tvdb_banner_url(tvdb_id)
-    'http://thetvdb.com/api/' + ENV['tvdb_api_key'] + '/series/' + tvdb_id.to_s + '/banners.xml'
+    tvdb_url + tvdb_id.to_s + '/banners.xml'
   end
 
   def timezone_url(trakt_id)
