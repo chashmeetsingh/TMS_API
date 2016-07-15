@@ -29,7 +29,7 @@ module ApiHelper
   end
 
   def tvdb_banner_url(tvdb_id)
-    'http://thetvdb.com/api/9DD79C4EF5C3AE90/series/' + tvdb_id.to_s + '/banners.xml'
+    'http://thetvdb.com/api/' + ENV['tvdb_api_key'] + '/series/' + tvdb_id.to_s + '/banners.xml'
   end
 
   def timezone_url(trakt_id)

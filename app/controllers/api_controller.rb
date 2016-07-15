@@ -46,7 +46,7 @@ class ApiController < ApplicationController
       trakt_id = show['show']['ids']['trakt'].to_i
       overview = trakt_json_response[0]['show']['overview']
       year = trakt_json_response[0]['show']['year'].to_i
-      status = trakt_json_response[0]['show']['status'].titleize
+      status = trakt_json_response[0]['show']['status'].titleize rescue nil
       poster_url = trakt_json_response[0]['show']['images']['poster']['medium']
 
       # Check for nil data
