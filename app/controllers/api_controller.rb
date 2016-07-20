@@ -4,229 +4,258 @@ class ApiController < ApplicationController
   require 'crack/xml'
   include ApiHelper
 
+  skip_before_filter :verify_authenticity_token
+  before_action :authenticate_app
+
   # Retrieve Trending Shows
   def trending
 
-    # Initialise Final Data Response
-    data = Array.new
+    begin
+      # Initialise Final Data Response
+      data = Array.new
 
-    # Get data from server
-    # Store retrieved data
-    # into response variable
-    response = HTTParty.get(trending_show_url, headers: headers)
+      # Get data from server
+      # Store retrieved data
+      # into response variable
+      response = HTTParty.get(trending_show_url, headers: headers)
 
-    # Parse JSON Data
-    # into json_response variable
-    json_response = response.body.length >= 2 ? JSON.parse(response.body) : nil
+      # Parse JSON Data
+      # into json_response variable
+      json_response = response.body.length >= 2 ? JSON.parse(response.body) : nil
 
-    # Loop through each JSON Object
-    json_response.each do |show|
+      # Loop through each JSON Object
+      json_response.each do |show|
 
-      # Get TVDB Show ID
-      tvdb_show_id = show['show']['ids']['tvdb'].to_s
+        # Get TVDB Show ID
+        tvdb_show_id = show['show']['ids']['tvdb'].to_s
 
-      # Get more data for show
-      # Using tvdb_show_id
-      # Store data into trakt_response
-      trakt_response = HTTParty.get(
-        search_url(tvdb_show_id),
-        headers: headers
-      )
+        # Get more data for show
+        # Using tvdb_show_id
+        # Store data into trakt_response
+        trakt_response = HTTParty.get(
+          search_url(tvdb_show_id),
+          headers: headers
+        )
 
-      # Parse JSON
-      # and
-      # Store into trakt_json_response
-      trakt_json_response = JSON.parse(trakt_response.body)
+        # Parse JSON
+        # and
+        # Store into trakt_json_response
+        trakt_json_response = JSON.parse(trakt_response.body)
 
-      # Initialise Variables
-      show_title = show['show']['title']
-      watchers = show['watchers'].to_i
-      thumb_url = trakt_json_response[0]['show']['images']['fanart']['thumb']
-      tvdb_id = show['show']['ids']['tvdb'].to_i
-      trakt_id = show['show']['ids']['trakt'].to_i
-      overview = trakt_json_response[0]['show']['overview']
-      year = trakt_json_response[0]['show']['year'].to_i
-      status = trakt_json_response[0]['show']['status'].titleize rescue nil
-      poster_url = trakt_json_response[0]['show']['images']['poster']['medium']
+        # Initialise Variables
+        show_title = show['show']['title']
+        watchers = show['watchers'].to_i
+        thumb_url = trakt_json_response[0]['show']['images']['fanart']['thumb']
+        tvdb_id = show['show']['ids']['tvdb'].to_i
+        trakt_id = show['show']['ids']['trakt'].to_i
+        overview = trakt_json_response[0]['show']['overview']
+        year = trakt_json_response[0]['show']['year'].to_i
+        status = trakt_json_response[0]['show']['status'].titleize rescue nil
+        poster_url = trakt_json_response[0]['show']['images']['poster']['medium']
 
-      # Check for nil data
-      unless trakt_json_response.nil?
-        data << {
-          show_title: show_title,
-          watchers_count: watchers,
-          thumb_image_url: thumb_url,
-          tvdb_id: tvdb_id,
-          trakt_id: trakt_id,
-          overview: overview,
-          year: year,
-          status: status,
-          poster_image_url: poster_url
-        }
+        # Check for nil data
+        unless trakt_json_response.nil?
+          data << {
+            show_title: show_title,
+            watchers_count: watchers,
+            thumb_image_url: thumb_url,
+            tvdb_id: tvdb_id,
+            trakt_id: trakt_id,
+            overview: overview,
+            year: year,
+            status: status,
+            poster_image_url: poster_url
+          }
+        end
       end
+
+      # Render data
+      render json: {
+        response: data
+      }
+
+    rescue
+
+      # Render data
+      render json: {
+        message: "error fetching data from server"
+      }
+
     end
 
-    # Render data
-    render json: {
-      response: data
-    }
+
   end
 
   # Retrieve Shows By Their ID
   def id
 
-    # TVDB ID
-    tvdb_id = params[:tvdb_id]
-    trakt_id = params[:trakt_id]
+    begin
+      # TVDB ID
+      tvdb_id = params[:tvdb_id]
+      trakt_id = params[:trakt_id]
 
-    # Retrieve XML Response
-    # From TVDB
-    xml_reponse = HTTParty.get(show_url(tvdb_id))
+      # Retrieve XML Response
+      # From TVDB
+      xml_reponse = HTTParty.get(show_url(tvdb_id))
 
-    # Parse XML -> JSON
-    json_parsed_response = Crack::XML.parse(xml_reponse.body)
+      # Parse XML -> JSON
+      json_parsed_response = Crack::XML.parse(xml_reponse.body)
 
-    # Show and Episode Object
-    show_data = json_parsed_response['Data']['Series']
-    episodes_data = json_parsed_response['Data']['Episode']
+      # Show and Episode Object
+      show_data = json_parsed_response['Data']['Series']
+      episodes_data = json_parsed_response['Data']['Episode']
 
-    # Get Time Zone and Rating
-    response = HTTParty.get(timezone_url(trakt_id), headers: headers)
-    timezone = response["airs"]["timezone"]
-
-    # Initialise Variables
-    seasons = Array.new
-    season = Array.new
-    show_id = show_data['id'].to_i
-    show_title = show_data['SeriesName']
-    show_actors = show_data['Actors']
-    show_genre = show_data['Genre']
-    show_first_aired = show_data['FirstAired']
-    show_air_time = show_data['Airs_Time']
-    show_network = show_data['Network']
-    show_overview = show_data['Overview']
-    show_rating = response['rating'].to_f
-    show_rating_count = show_data['RatingCount'].to_i
-    show_runtime = show_data['Runtime'].to_i
-    show_status = show_data['Status'].titleize
-    show_banner_url = image_base_url + show_data['banner']
-    show_fanart_url = image_base_url + show_data['fanart']
-    show_poster_url = image_base_url + show_data['poster']
-    season_no = 0
-
-    episodes_data.each do |episode|
+      # Get Time Zone and Rating
+      response = HTTParty.get(timezone_url(trakt_id), headers: headers)
+      timezone = response["airs"]["timezone"]
 
       # Initialise Variables
-      image = episode['filename'].to_s
-      title = episode['EpisodeName']
-      combined_season = episode['SeasonNumber'].to_i
-      episode_id = episode['id'].to_i
-      first_aired = episode['FirstAired']
-      air_time = show_data['Airs_Time']
-      overview = episode['Overview']
-      rating = episode['Rating'].to_f
-      rating_count = episode['RatingCount'].to_i
-      writer = episode['Writer']
-      episode_no = episode['EpisodeNumber'].to_i
+      seasons = Array.new
+      season = Array.new
+      show_id = show_data['id'].to_i
+      show_title = show_data['SeriesName']
+      show_actors = show_data['Actors']
+      show_genre = show_data['Genre']
+      show_first_aired = show_data['FirstAired']
+      show_air_time = show_data['Airs_Time']
+      show_network = show_data['Network']
+      show_overview = show_data['Overview']
+      show_rating = response['rating'].to_f
+      show_rating_count = show_data['RatingCount'].to_i
+      show_runtime = show_data['Runtime'].to_i
+      show_status = show_data['Status'].titleize
+      show_banner_url = image_base_url + show_data['banner']
+      show_fanart_url = image_base_url + show_data['fanart']
+      show_poster_url = image_base_url + show_data['poster']
+      season_no = 0
 
-      # Use conditionals for assignment
-      image_url = nil ? image.nil? : image_base_url + image
-      episode_title = if title.nil?
-                        'TBA'
-                      else
-                        title
-                      end
-      air_date_time = if first_aired.nil? or air_time.nil?
-                        nil
-                      else
-                        first_aired + ' ' + air_time
-                      end
+      episodes_data.each do |episode|
 
-      # Check if Special Episode Season
-      if combined_season == season_no
-        season << {
-          id: episode_id.to_i,
-          title: episode_title,
-          air_date_time: air_date_time,
-          overview: overview,
-          image: image_url,
-          rating: rating,
-          rating_count: rating_count,
-          writer: writer,
-          episode: episode_no
-        }
-      else
-        if season.any?
-          seasons << {
-            episodes: season,
-            'season' => season_no
+        # Initialise Variables
+        image = episode['filename'].to_s
+        title = episode['EpisodeName']
+        combined_season = episode['SeasonNumber'].to_i
+        episode_id = episode['id'].to_i
+        first_aired = episode['FirstAired']
+        air_time = show_data['Airs_Time']
+        overview = episode['Overview']
+        rating = episode['Rating'].to_f
+        rating_count = episode['RatingCount'].to_i
+        writer = episode['Writer']
+        episode_no = episode['EpisodeNumber'].to_i
+
+        # Use conditionals for assignment
+        image_url = nil ? image.nil? : image_base_url + image
+        episode_title = if title.nil?
+                          'TBA'
+                        else
+                          title
+                        end
+        air_date_time = if first_aired.nil? or air_time.nil?
+                          nil
+                        else
+                          first_aired + ' ' + air_time
+                        end
+
+        # Check if Special Episode Season
+        if combined_season == season_no
+          season << {
+            id: episode_id.to_i,
+            title: episode_title,
+            air_date_time: air_date_time,
+            overview: overview,
+            image: image_url,
+            rating: rating,
+            rating_count: rating_count,
+            writer: writer,
+            episode: episode_no
+          }
+        else
+          if season.any?
+            seasons << {
+              episodes: season,
+              'season' => season_no
+            }
+          end
+          season_no += 1
+          season = []
+          season << {
+            id: episode_id,
+            title: episode_title,
+            air_date_time: air_date_time,
+            overview: overview,
+            image: image_url,
+            rating: rating,
+            rating_count: rating_count,
+            writer: writer,
+            episode: episode_no
           }
         end
-        season_no += 1
-        season = []
-        season << {
-          id: episode_id,
-          title: episode_title,
-          air_date_time: air_date_time,
-          overview: overview,
-          image: image_url,
-          rating: rating,
-          rating_count: rating_count,
-          writer: writer,
-          episode: episode_no
-        }
       end
+
+      seasons << {
+        episodes: season,
+        'season' => season_no
+      }
+
+      data = {
+        id: show_id,
+        title: show_title,
+        actors: show_actors,
+        genre: show_genre,
+        first_aired: show_first_aired,
+        air_time: show_air_time,
+        network: show_network,
+        overview: show_overview,
+        rating: show_rating,
+        rating_count: show_rating_count,
+        runtime: show_runtime,
+        status: show_status,
+        banner: show_banner_url,
+        fanart: show_fanart_url,
+        poster: show_poster_url,
+        timezone: timezone,
+        seasons: seasons
+      }
+
+      # Render Data
+      render json: data
+
+    rescue
+
+      # Error
+      render json: {
+        message: "error fetching data"
+      }
+
     end
 
-    seasons << {
-      episodes: season,
-      'season' => season_no
-    }
 
-    data = {
-      id: show_id,
-      title: show_title,
-      actors: show_actors,
-      genre: show_genre,
-      first_aired: show_first_aired,
-      air_time: show_air_time,
-      network: show_network,
-      overview: show_overview,
-      rating: show_rating,
-      rating_count: show_rating_count,
-      runtime: show_runtime,
-      status: show_status,
-      banner: show_banner_url,
-      fanart: show_fanart_url,
-      poster: show_poster_url,
-      timezone: timezone,
-      seasons: seasons
-    }
-
-    # Render Data
-    render json: data
   end
 
   # Retrieve Show by Their Name
   def name
 
-    # Show Name
-    show_name = params[:show_name]
-
-    # Get JSON Reponse
-    response = HTTParty.get(
-      search_url_name(show_name),
-      headers: headers
-    )
-
-    # Check if response null
-    json_response = response.body.length >= 2 ? JSON.parse(response.body) : nil
-
-    # Initialise data
-    data = Array.new
-
-    # Add Rescue in case
-    # data not retrieved
     begin
+
+      # Show Name
+      show_name = params[:show_name]
+
+      # Get JSON Reponse
+      response = HTTParty.get(
+        search_url_name(show_name),
+        headers: headers
+      )
+
+      # Check if response null
+      json_response = response.body.length >= 2 ? JSON.parse(response.body) : nil
+
+      # Initialise data
+      data = Array.new
+
+      # Add Rescue in case
+      # data not retrieved
+
       json_response.each do |show|
 
         # Initialize variables
@@ -267,17 +296,15 @@ class ApiController < ApplicationController
         end
       end
 
+      # Render Data
+      render json: {
+        results: data
+      }
     rescue
-
       # Error Response
-      data << {
+      render json: {
         message: 'Error fetching data'
       }
     end
-
-    # Render Data
-    render json: {
-      results: data
-    }
   end
 end

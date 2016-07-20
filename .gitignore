@@ -41,3 +41,6 @@ bower.json
 ## File-based project format:
 *.ipr
 config/api_keys.yml
+app/views/api/
+app/views/show/
+app/views/trending/

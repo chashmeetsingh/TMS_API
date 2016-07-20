@@ -1,9 +1,7 @@
 Rails.application.routes.draw do
-  root to: 'api#trending'
+  post '/trending' => 'api#trending'
 
-  get '/trending' => 'api#trending'
+  post '/show/id/:tvdb_id/:trakt_id' => 'api#id'
 
-  get '/show/id/:tvdb_id/:trakt_id' => 'api#id'
-
-  get '/show/name/:show_name' => 'api#name'
+  post '/show/name/:show_name' => 'api#name'
 end
