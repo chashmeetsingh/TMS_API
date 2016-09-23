@@ -43,15 +43,15 @@ class ApiController < ApplicationController
         trakt_json_response = JSON.parse(trakt_response.body)
 
         # Initialise Variables
-        show_title = show['show']['title']
-        watchers = show['watchers'].to_i
-        thumb_url = trakt_json_response[0]['show']['images']['fanart']['thumb']
-        tvdb_id = show['show']['ids']['tvdb'].to_i
-        trakt_id = show['show']['ids']['trakt'].to_i
-        overview = trakt_json_response[0]['show']['overview']
-        year = trakt_json_response[0]['show']['year'].to_i
+        show_title = show['show']['title'] rescue 'Unavailable'
+        watchers = show['watchers'].to_i rescue nil
+        thumb_url = trakt_json_response[0]['show']['images']['fanart']['thumb'] rescue ''
+        tvdb_id = show['show']['ids']['tvdb'].to_i rescue nil
+        trakt_id = show['show']['ids']['trakt'].to_i rescue nil
+        overview = trakt_json_response[0]['show']['overview'] rescue 'Unavailable'
+        year = trakt_json_response[0]['show']['year'].to_i rescue nil
         status = trakt_json_response[0]['show']['status'].titleize rescue nil
-        poster_url = trakt_json_response[0]['show']['images']['poster']['medium']
+        poster_url = trakt_json_response[0]['show']['images']['poster']['medium'] rescue ''
 
         # Check for nil data
         unless trakt_json_response.nil?
@@ -74,13 +74,12 @@ class ApiController < ApplicationController
         response: data
       }
 
-    rescue
-
-      # Render data
+    rescue Exception => ex
+      # Error Response
       render json: {
-        message: "error fetching data from server"
+          message: 'Error fetching data',
+          error: ex.message
       }
-
     end
 
 
@@ -104,45 +103,49 @@ class ApiController < ApplicationController
       # Show and Episode Object
       show_data = json_parsed_response['Data']['Series']
       episodes_data = json_parsed_response['Data']['Episode']
+      unless episodes_data.kind_of?(Array)
+        episodes_data = []
+        episodes_data << episodes_data
+      end
 
       # Get Time Zone and Rating
       response = HTTParty.get(timezone_url(trakt_id), headers: headers)
-      timezone = response["airs"]["timezone"]
+      timezone = response["airs"]["timezone"] rescue nil
 
       # Initialise Variables
       seasons = Array.new
       season = Array.new
-      show_id = show_data['id'].to_i
-      show_title = show_data['SeriesName']
-      show_actors = show_data['Actors']
-      show_genre = show_data['Genre']
-      show_first_aired = show_data['FirstAired']
-      show_air_time = show_data['Airs_Time']
-      show_network = show_data['Network']
-      show_overview = show_data['Overview']
-      show_rating = response['rating'].to_f
-      show_rating_count = show_data['RatingCount'].to_i
-      show_runtime = show_data['Runtime'].to_i
-      show_status = show_data['Status'].titleize
-      show_banner_url = image_base_url + show_data['banner']
-      show_fanart_url = image_base_url + show_data['fanart']
-      show_poster_url = image_base_url + show_data['poster']
+      show_id = show_data['id'].to_i rescue nil
+      show_title = show_data['SeriesName'] rescue 'Unavailable'
+      show_actors = show_data['Actors'] rescue ''
+      show_genre = show_data['Genre'] rescue ''
+      show_first_aired = show_data['FirstAired'] rescue nil
+      show_air_time = show_data['Airs_Time'] rescue nil
+      show_network = show_data['Network'] rescue ''
+      show_overview = show_data['Overview'] rescue 'Not Available'
+      show_rating = response['rating'].to_f rescue 0.0
+      show_rating_count = show_data['RatingCount'].to_i rescue 0
+      show_runtime = show_data['Runtime'].to_i rescue nil
+      show_status = show_data['Status'].titleize rescue 'Not Available'
+      show_banner_url = image_base_url + show_data['banner'] rescue ''
+      show_fanart_url = image_base_url + show_data['fanart'] rescue ''
+      show_poster_url = image_base_url + show_data['poster'] rescue ''
       season_no = 0
 
       episodes_data.each do |episode|
 
         # Initialise Variables
-        image = episode['filename'].to_s
-        title = episode['EpisodeName']
-        combined_season = episode['SeasonNumber'].to_i
-        episode_id = episode['id'].to_i
-        first_aired = episode['FirstAired']
-        air_time = show_data['Airs_Time']
-        overview = episode['Overview']
-        rating = episode['Rating'].to_f
-        rating_count = episode['RatingCount'].to_i
-        writer = episode['Writer']
-        episode_no = episode['EpisodeNumber'].to_i
+        image = episode['filename'].to_s rescue ''
+        title =  episode['EpisodeName'] rescue 'Not Available'
+        combined_season = episode['SeasonNumber'].to_i rescue nil
+        episode_id = episode['id'].to_i rescue nil
+        first_aired =  episode['FirstAired'] rescue nil
+        air_time = show_data['Airs_Time'] rescue nil
+        overview = episode['Overview'] rescue 'Not Available'
+        rating = episode['Rating'].to_f rescue nil
+        rating_count = episode['RatingCount'].to_i rescue nil
+        writer = episode['Writer'] rescue 'Not Available'
+        episode_no = episode['EpisodeNumber'] rescue nil
 
         # Use conditionals for assignment
         image_url = nil ? image.nil? : image_base_url + image
@@ -160,7 +163,7 @@ class ApiController < ApplicationController
         # Check if Special Episode Season
         if combined_season == season_no
           season << {
-            id: episode_id.to_i,
+            id: episode_id,
             title: episode_title,
             air_date_time: air_date_time,
             overview: overview,
@@ -221,11 +224,12 @@ class ApiController < ApplicationController
       # Render Data
       render json: data
 
-    rescue
+    rescue Exception => ex
 
-      # Error
+      # Error Response
       render json: {
-        message: "error fetching data"
+          message: 'Error fetching data',
+          error: ex.message
       }
 
     end
@@ -260,14 +264,14 @@ class ApiController < ApplicationController
 
         # Initialize variables
         show_obj = show['show']
-        poster_image_url = show_obj['images']['poster']['medium']
-        tvdb_id = show_obj['ids']['tvdb'].to_i
-        trakt_id = show_obj['ids']['trakt'].to_i
+        poster_image_url = show_obj['images']['poster']['medium'] rescue ''
+        tvdb_id = show_obj['ids']['tvdb'].to_i rescue nil
+        trakt_id = show_obj['ids']['trakt'].to_i rescue nil
         banner_image_url = ''
-        show_title = show_obj['title']
-        show_overview = show_obj['overview']
-        show_year = show_obj['year'].to_i
-        show_status = show_obj['status'].titleize
+        show_title = show_obj['title'] rescue 'Not Available'
+        show_overview = show_obj['overview'] rescue 'Not Available'
+        show_year = show_obj['year'].to_i rescue nil
+        show_status = show_obj['status'].titleize rescue 'Not Available'
 
         # Check for null
         unless poster_image_url.nil? or tvdb_id.nil?
@@ -300,10 +304,11 @@ class ApiController < ApplicationController
       render json: {
         results: data
       }
-    rescue
+    rescue Exception => ex
       # Error Response
       render json: {
-        message: 'Error fetching data'
+        message: 'Error fetching data',
+        error: ex.message
       }
     end
   end
