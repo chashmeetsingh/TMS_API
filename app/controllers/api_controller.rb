@@ -285,9 +285,7 @@ class ApiController < ApplicationController
 
         end
 
-        # Check for null
-        unless banner_image_url.empty? or show_year.nil?
-          data << {
+        data << {
             title: show_title,
             overview: show_overview,
             year: show_year,
@@ -296,8 +294,7 @@ class ApiController < ApplicationController
             trakt_id: trakt_id,
             banner: banner_image_url,
             poster: poster_image_url
-          }
-        end
+        }
       end
 
       # Render Data
