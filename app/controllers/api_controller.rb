@@ -56,15 +56,15 @@ class ApiController < ApplicationController
         # Check for nil data
         unless trakt_json_response.nil?
           data << {
-            show_title: show_title,
-            watchers_count: watchers,
-            thumb_image_url: thumb_url,
+            title: show_title,
+            watchers: watchers,
+            thumb: thumb_url,
             tvdb_id: tvdb_id,
             trakt_id: trakt_id,
             overview: overview,
             year: year,
             status: status,
-            poster_image_url: poster_url
+            poster: poster_url
           }
         end
       end
