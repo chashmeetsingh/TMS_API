@@ -1,0 +1,2 @@
+ENV['trakt_api_key'] = ‘YOUR_API_KEY_HERE’
+ENV['tvdb_api_key'] = ‘YOUR_API_KEY_HERE’
