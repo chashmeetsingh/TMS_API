@@ -11,11 +11,6 @@ You can also sneak a peek at what other people like to watch.
 And for ultimate pleasure, you can use this app to sync all your shows' data between devices at your home!
 And with smooth, ebony interface it is a real eye-candy for every smart user.
 
-## Apllication
-
-<p align="center"><img src="img/1.png"></p>
-<p align="center"><img src="img/2.png"></p>
-<p align="center"><img src="img/3.png"></p>
 
 ## Data Sources
 The app uses the following data sources
