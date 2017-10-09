@@ -1,4 +1,4 @@
-<p align="center"><img src="img/logo.png"></p>
+<p align="center"><img src="tms-logo.png"></p>
 
 # TMS API
 > API for Track My Shows Android App
